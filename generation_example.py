@@ -137,8 +137,8 @@ def main():
     
     tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
     if args.fp16:
-        # Try out bfloat16
-        model.to(dtype=torch.bfloat16, device=torch.device('cuda:0'))
+        # Try out to use pure float16 for inference
+        model.to(dtype=torch.float16, device=torch.device('cuda:0'))
         # model.half().cuda() # This should take about 12GB of Graphics RAM, if you have a larger than 16GB gpu you don't need the half()
 
     input_text = args.input
