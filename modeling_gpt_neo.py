@@ -205,8 +205,6 @@ class GPTNeoAttentionMixin:
         return tensor.view(new_shape)
 
     def _attn(self, query, key, value, causal_mask, masked_bias, attn_dropout, attention_mask=None, head_mask=None, scale_attn=None):
-        print('query.dtype=', query.dtype)
-        print('key.dtype=', key.dtype)
         attn_weights = torch.matmul(query, key.transpose(-1, -2))
         attn_weights = torch.where(causal_mask, attn_weights, masked_bias.to(attn_weights.dtype))
         
@@ -312,8 +310,8 @@ class GPTNeoSelfAttention(nn.Module, GPTNeoAttentionMixin):
                 q_rot = query[:, :, :, :self.rotary_dim]
                 q_pass = query[:, :, :, self.rotary_dim:]
 
-                k_rot = apply_rotary_pos_emb(k_rot, (self.sin, self.cos), offset=offset).half()
-                q_rot = apply_rotary_pos_emb(q_rot, (self.sin, self.cos), offset=offset).half()
+                k_rot = apply_rotary_pos_emb(k_rot, (self.sin, self.cos), offset=offset)
+                q_rot = apply_rotary_pos_emb(q_rot, (self.sin, self.cos), offset=offset)
 
                 key = torch.cat([k_rot, k_pass], dim=-1)
                 query = torch.cat([q_rot, q_pass], dim=-1)
@@ -326,8 +324,8 @@ class GPTNeoSelfAttention(nn.Module, GPTNeoAttentionMixin):
         if layer_past is not None:
             past_key = layer_past[0]
             past_value = layer_past[1]
-            key = torch.cat((past_key, key), dim=-2).half()
-            value = torch.cat((past_value, value), dim=-2).half()
+            key = torch.cat((past_key, key), dim=-2)
+            value = torch.cat((past_value, value), dim=-2)
 
         if use_cache is True:
             present = (key, value)
@@ -589,7 +587,7 @@ class GPTNeoModel(GPTNeoPreTrainedModel):
         if not config.rotary:
             self.wpe = nn.Embedding(config.max_position_embeddings, self.embed_dim)
         self.drop = nn.Dropout(config.embed_dropout)
-        self.h = nn.ModuleList([to_gpu(GPTNeoBlock(config, layer_id=i).half(), config) for i in range(config.num_layers)])
+        self.h = nn.ModuleList([GPTNeoBlock(config, layer_id=i), config for i in range(config.num_layers)])
         self.ln_f = nn.LayerNorm(self.embed_dim, eps=config.layer_norm_epsilon)
         self.rotary = config.rotary
 
@@ -783,14 +781,18 @@ class GPTNeoModel(GPTNeoPreTrainedModel):
     GPT_NEO_START_DOCSTRING,
 )
 class GPTNeoForCausalLM(GPTNeoPreTrainedModel):
-    _keys_to_ignore_on_load_missing = [r"h\.\d+\.attn\.masked_bias", r"h\.\d+\.attn\.attention\.scale_attn", r"h\.\d+\.attn\.attention\.(sin|cos)", r"lm_head\.weight", r"h\.\d+\.attn\.attention\.bias"]
+    _keys_to_ignore_on_load_missing = [r"h\.\d+\.attn\.masked_bias",
+                                       r"h\.\d+\.attn\.attention\.scale_attn",
+                                       r"h\.\d+\.attn\.attention\.(sin|cos)", 
+                                       r"lm_head\.weight", 
+                                       r"h\.\d+\.attn\.attention\.bias"]
     _keys_to_ignore_on_save = [r"lm_head.weight"]
 
     def __init__(self, config):
         super().__init__(config)
-        self.transformer = to_gpu(GPTNeoModel(config).half(), config)
+        self.transformer = GPTNeoModel(config)
         self.jax = config.jax
-        self.lm_head = to_gpu(nn.Linear(config.hidden_size, config.vocab_size, bias=self.jax).half(), config)
+        self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=self.jax)
         self.init_weights()
 
     def get_output_embeddings(self):
