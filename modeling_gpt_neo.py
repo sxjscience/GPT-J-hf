@@ -205,6 +205,8 @@ class GPTNeoAttentionMixin:
         return tensor.view(new_shape)
 
     def _attn(self, query, key, value, causal_mask, masked_bias, attn_dropout, attention_mask=None, head_mask=None, scale_attn=None):
+        print('query.dtype=', query.dtype)
+        print('key.dtype=', key.dtype)
         attn_weights = torch.matmul(query, key.transpose(-1, -2))
         attn_weights = torch.where(causal_mask, attn_weights, masked_bias.to(attn_weights.dtype))
         
