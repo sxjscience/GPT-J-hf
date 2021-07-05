@@ -98,7 +98,9 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--max_length', type=int, default=800,
                         help='max length of generation example')
     parser.add_argument('--top_p', type=float, default=0.7,
-                        help='top-p value of output')
+                        help='top-p value in the sampler.')
+    parser.add_argument('--top_k', type=int, default=32,
+                        help='top-k value in the sampler.')
     parser.add_argument('--download_dir', type=str, default=None,
                         help='Destination path to store downloaded file, default in current dir')
     parser.add_argument('--dtype', type=str, choices=['float16', 'bfloat16'])
@@ -156,7 +158,7 @@ def main():
         do_sample=True,
         max_length=args.max_length,
         top_p=None,#args.top_p,
-        top_k=0,
+        top_k=args.top_k,
         temperature=1.0,
     )
     output_context = tokenizer.decode(output[0], skip_special_tokens=True)
