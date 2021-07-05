@@ -101,8 +101,7 @@ def add_args(parser: argparse.ArgumentParser):
                         help='top-p value of output')
     parser.add_argument('--download_dir', type=str, default=None,
                         help='Destination path to store downloaded file, default in current dir')
-    parser.add_argument('--fp16', action='store_true',
-                        help='whether use fp16')
+    parser.add_argument('--dtype', type=str, choices=['float16', 'bfloat16'])
     parser.add_argument('--seed', type=int, default=None,
                         help='The seed for generating the samples.')
 
@@ -130,16 +129,19 @@ def main():
 
     logger.info("***download finished***")
     logger.info("***loading model***")
-    torch.set_default_tensor_type(torch.bfloat16)
+    # Load the model with float16 / bfloat16 to save memory
+    if args.dtype == 'float16':
+        torch.set_default_type(torch.float16)
+    elif args.dtype == 'bfloat16':
+        torch.set_default_type(torch.bfloat16)
+    else:
+        raise NotImplementedError
     model = GPTNeoForCausalLM.from_pretrained("./gpt-j-hf")
     logger.info("***loading finished***")
     model.eval()
-    
+
     tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-    if args.fp16:
-        # Try out to use pure float16 for inference
-        model.to(dtype=torch.bfloat16, device=torch.device('cuda:0'))
-        # model.half().cuda() # This should take about 12GB of Graphics RAM, if you have a larger than 16GB gpu you don't need the half()
+    model.to(device=torch.device('cuda:0'))
 
     input_text = args.input
     logger.info("***encoding***")

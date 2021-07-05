@@ -1,17 +1,20 @@
-# GPT-6B-J in PyTorch
+# GPT-J-6B in PyTorch
 
-[GPT-6B-J](https://arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/) example based on the official [Huggingface Transformers] library.
+[GPT-J-6B](https://arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/) example based on the official [Huggingface Transformers](https://huggingface.co/) library.
 
 Credit to https://github.com/paulcjh/gpt-j-6b/blob/main/gpt-j-t4.ipynb
 
 ## Install Requirements
+We recommend to use CUDA-11.1 that is available in the "Deep Learning Base AMI".
+
 ```bash
-python3 -m pip install einops transformers
+python3 -m pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html
+python3 -m pip install einops transformers deepspeed
 ```
 
 ## Run Example
 
-You can run the following command with an AWS EC2 g4dn.xlarge. It will generate the continuation of the sentence "Why AutoGluon is great?".
+You can run the following command with an AWS EC2 g4dn.2xlarge. It will generate the continuation of the sentence "Why AutoGluon is great?".
 ```
 bash run_generation.sh
 ```
