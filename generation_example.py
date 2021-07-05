@@ -132,9 +132,9 @@ def main():
     logger.info("***loading model***")
     # Load the model with float16 / bfloat16 to save memory
     if args.dtype == 'float16':
-        torch.set_default_type(torch.float16)
+        torch.set_default_dtype(torch.float16)
     elif args.dtype == 'bfloat16':
-        torch.set_default_type(torch.bfloat16)
+        torch.set_default_dtype(torch.bfloat16)
     else:
         raise NotImplementedError
     model = GPTNeoForCausalLM.from_pretrained("./gpt-j-hf")
