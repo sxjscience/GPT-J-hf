@@ -97,9 +97,9 @@ def add_args(parser: argparse.ArgumentParser):
                         help='input text')
     parser.add_argument('--max_length', type=int, default=800,
                         help='max length of generation example')
-    parser.add_argument('--top_p', type=float, default=0.7,
+    parser.add_argument('--top_p', type=float, default=0.9,
                         help='top-p value in the sampler.')
-    parser.add_argument('--top_k', type=int, default=32,
+    parser.add_argument('--top_k', type=int, default=0,
                         help='top-k value in the sampler.')
     parser.add_argument('--download_dir', type=str, default=None,
                         help='Destination path to store downloaded file, default in current dir')

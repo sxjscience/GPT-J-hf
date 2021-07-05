@@ -7,6 +7,7 @@ python3 generation_example.py \
     --input "Why AutoGluon is great?" \
     --max_length 800 \
     --top_p 0.9 \
+    --top_k 0 \
     --download_dir ./ \
     --seed 123 \
     --dtype float16 | tee sample.txt
