@@ -107,6 +107,7 @@ def add_args(parser: argparse.ArgumentParser):
 
 
 def main():
+    torch.set_grad_enabled(False)  # we don't need gradients since we're just running inference
     parser = argparse.ArgumentParser()
     add_args(parser)
     args = parser.parse_args()
