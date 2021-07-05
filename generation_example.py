@@ -131,10 +131,12 @@ def main():
     logger.info("***download finished***")
     logger.info("***loading model***")
     # Load the model with bfloat16 to save memory
+    start = time.time()
     torch.set_default_dtype(torch.bfloat16)
     model = GPTNeoForCausalLM.from_pretrained("./gpt-j-hf")
     torch.set_default_dtype(torch.float32)
-    logger.info("***loading finished***")
+    end = time.time()
+    logger.info(f"***loading finished. Time spent={end - start}s.***")
     model.eval()
 
     tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
@@ -146,6 +148,7 @@ def main():
         raise NotImplementedError
     input_text = args.input
     logger.info("***encoding***")
+    start = time.time()
     input_ids = tokenizer.encode(str(input_text), return_tensors='pt').cuda()
     logger.info("***generating***")
     output = model.generate(
@@ -157,7 +160,9 @@ def main():
         temperature=1.0,
     )
     output_context = tokenizer.decode(output[0], skip_special_tokens=True)
+    end = time.time()
     logger.info('***output_context: {}'.format(output_context))
+    logger.info(f'Total time spent: {end - start}s.')
     output_file = os.path.join(args.output_dir,'output_context.txt')
     with open(output_file, "w", encoding='utf-8') as f:
         f.write(str(output_context))
