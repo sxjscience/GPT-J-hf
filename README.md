@@ -14,12 +14,15 @@ python3 -m pip install einops transformers deepspeed
 
 ## Run Example
 
-You can run the following command with an AWS EC2 g4dn.2xlarge. It will generate the continuation of the sentence "Why AutoGluon is great?".
+You can run the following command with an [AWS EC2 g4dn.2xlarge](https://aws.amazon.com/ec2/instance-types/g4/). It will generate the continuation of the sentence "Why AutoGluon is great?".
+
 ```
 bash run_generation.sh
 ```
 
-## Sample
+Generating 800 tokens with "Why AutoGluon is great?" takes 45 seconds. Following is a sample output of the script .
+
+### Sample
 
 ```
 ***output_context: Why AutoGluon is great?
