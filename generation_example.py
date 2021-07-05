@@ -130,7 +130,7 @@ def main():
 
     logger.info("***download finished***")
     logger.info("***loading model***")
-    torch.set_default_dtype(torch.bfloat16)
+    torch.set_default_tensor_type(torch.bfloat16)
     model = GPTNeoForCausalLM.from_pretrained("./gpt-j-hf")
     logger.info("***loading finished***")
     model.eval()
