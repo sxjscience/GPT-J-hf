@@ -90,7 +90,7 @@ def check_sha1(filename, sha1_hash):
     return sha1.hexdigest() == sha1_hash
 
 
-def add_parser(parser: argparse.ArgumentParser):
+def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--output_dir', type=str, default='./',
                         help='output dir')
     parser.add_argument('--input', type=str, default='Why AutoGluon is great?',
@@ -109,7 +109,7 @@ def add_parser(parser: argparse.ArgumentParser):
 
 def main():
     parser = argparse.ArgumentParser()
-    add_parser(parser)
+    add_args(parser)
     args = parser.parse_args()
     if args.seed is not None:
         set_seed(args.seed)
@@ -137,7 +137,9 @@ def main():
     
     tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
     if args.fp16:
-        model.half().cuda() # This should take about 12GB of Graphics RAM, if you have a larger than 16GB gpu you don't need the half()
+        # Try out bfloat16
+        model.to(dtype=torch.bfloat16, device=torch.device('cuda:0'))
+        # model.half().cuda() # This should take about 12GB of Graphics RAM, if you have a larger than 16GB gpu you don't need the half()
 
     input_text = args.input
     logger.info("***encoding***")
