@@ -149,7 +149,7 @@ def main():
         input_ids,
         do_sample=True,
         max_length=args.max_length,
-        top_p=args.top_p,
+        top_p=None,#args.top_p,
         top_k=0,
         temperature=1.0,
     )
