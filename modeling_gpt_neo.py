@@ -587,7 +587,7 @@ class GPTNeoModel(GPTNeoPreTrainedModel):
         if not config.rotary:
             self.wpe = nn.Embedding(config.max_position_embeddings, self.embed_dim)
         self.drop = nn.Dropout(config.embed_dropout)
-        self.h = nn.ModuleList([GPTNeoBlock(config, layer_id=i), config for i in range(config.num_layers)])
+        self.h = nn.ModuleList([GPTNeoBlock(config, layer_id=i) for i in range(config.num_layers)])
         self.ln_f = nn.LayerNorm(self.embed_dim, eps=config.layer_norm_epsilon)
         self.rotary = config.rotary
 
