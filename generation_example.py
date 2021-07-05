@@ -130,20 +130,20 @@ def main():
 
     logger.info("***download finished***")
     logger.info("***loading model***")
-    # Load the model with float16 / bfloat16 to save memory
-    if args.dtype == 'float16':
-        torch.set_default_dtype(torch.float16)
-    elif args.dtype == 'bfloat16':
-        torch.set_default_dtype(torch.bfloat16)
-    else:
-        raise NotImplementedError
+    # Load the model with bfloat16 to save memory
+    torch.set_default_dtype(torch.bfloat16)
     model = GPTNeoForCausalLM.from_pretrained("./gpt-j-hf")
+    torch.set_default_dtype(torch.float32)
     logger.info("***loading finished***")
     model.eval()
 
     tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-    model.to(device=torch.device('cuda:0'))
-
+    if args.dtype == 'float16':
+        model.to(dtype=torch.float16, device=torch.device('cuda:0'))
+    elif args.dtype == 'bfloat16':
+        model.to(dtype=torch.bfloat16, device=torch.device('cuda:0'))
+    else:
+        raise NotImplementedError
     input_text = args.input
     logger.info("***encoding***")
     input_ids = tokenizer.encode(str(input_text), return_tensors='pt').cuda()
