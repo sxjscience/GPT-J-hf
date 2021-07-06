@@ -9,5 +9,5 @@ python3 generation_example.py \
     --top_p 1.0 \
     --top_k 0 \
     --download_dir ./ \
-    --seed 234 \
-    --dtype bfloat16 | tee sample.txt
+    --seed 12345 \
+    --dtype float16 | tee sample.txt
